@@ -1,1 +1,1 @@
-"# go-sft-imgcap" 
+# go-sft-imgcap
