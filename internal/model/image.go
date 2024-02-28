@@ -9,7 +9,7 @@ import (
 
 func SaveImg(img b64img.Image) error {
 	dir := path.Join(ASSETS_DIR, "images")
-	os.MkdirAll(dir, 0644)
+	os.MkdirAll(dir, 0777)
 	filename := path.Join(dir, string(img.Hash())+".jpg")
 	return img.SaveJpeg(filename)
 }

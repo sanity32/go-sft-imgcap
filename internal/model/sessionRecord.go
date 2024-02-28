@@ -26,7 +26,7 @@ func (rec *SessionRecord) Sid() uuid.UUID {
 
 func (rec SessionRecord) Filepath() string {
 	dir := rec.Descr.Folder()
-	os.MkdirAll(dir, 0644)
+	os.MkdirAll(dir, 0777)
 	return path.Join(dir, rec.Sid().String())
 }
 
@@ -63,7 +63,7 @@ func (rec *SessionRecord) Load() error {
 	lines := strings.Split(string(bb), "\n")
 	for _, line := range lines {
 		hash := b64img.Hash(line)
-		img, err := HashDir.Read(hash)
+		img, err := MainHashDir.Read(hash)
 		if err != nil {
 			return err
 		}
@@ -73,9 +73,9 @@ func (rec *SessionRecord) Load() error {
 }
 
 func (rec *SessionRecord) PopulateHashDir() error {
-	HashDir.Create()
+	MainHashDir.Create()
 	for _, h := range rec.Images {
-		if err := HashDir.Write(b64img.Image(h)); err != nil {
+		if err := MainHashDir.Write(b64img.Image(h)); err != nil {
 			return err
 		}
 	}

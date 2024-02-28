@@ -1,0 +1,47 @@
+.ffs {
+	background: #fff;
+	padding: 16px;
+	border: 1px solid #e2e2e2;
+
+	background: rgb(183, 241, 187);
+	background: linear-gradient(
+		90deg,
+		rgba(183, 241, 187, 1) 25%,
+		rgba(121, 114, 9, 1) 70%,
+		rgba(191, 52, 28, 1) 100%
+	);
+}
+
+.ffs[data-confirmed="true"] .img {
+	border: 2px dotted green;
+}
+
+.ffs[data-confirmed="false"] .img {
+	border: 2px dotted red;
+}
+
+.ffs[data-solved="true"] .img-wrap {
+	width: 100%;
+}
+
+.ffs[data-solved="true"][data-value="true"] .img-wrap {
+	width: 0%;
+}
+
+.ffs .img-wrap {
+	list-style: none;
+	letter-spacing: 1px;
+	font: 12px "Tahoma";
+	line-height: 24px;
+	color: #444;
+	text-align: right;
+	white-space: nowrap;
+	width: 50%;
+	transition: width 0.8s ease;
+}
+
+.ffs .img-wrap .img {
+	text-align: right;
+	pointer-events: none;
+	border-width: 2px;
+}

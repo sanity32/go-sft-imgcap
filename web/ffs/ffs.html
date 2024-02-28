@@ -1,0 +1,101 @@
+<html>
+	<body>
+		<form id="form1" class="ffs" action="http://localhost/dummy" method="POST">
+			<div class="img-wrap">
+				<img
+					class="img"
+					src="http://45.155.207.252:18083/assets/image/344237bc89cd12c5a5e831b0448ec52dcf045198"
+				/>
+			</div>
+			<input type="text" name="i`" />
+			<input type="submit" />
+		</form>
+	</body>
+</html>
+
+<style>
+	.ffs {
+		background: #fff;
+		padding: 16px;
+		border: 1px solid #e2e2e2;
+
+		background: rgb(183, 241, 187);
+		background: linear-gradient(
+			90deg,
+			rgba(183, 241, 187, 1) 25%,
+			rgba(121, 114, 9, 1) 70%,
+			rgba(191, 52, 28, 1) 100%
+		);
+	}
+
+	.ffs[data-confirmed="true"] {
+		background: cyan;
+	}
+
+	.ffs[data-confirmed="false"] {
+		background: red;
+	}
+
+	.ffs[data-solved="true"] .img-wrap {
+		width: 100%;
+	}
+
+	.ffs[data-solved="true"][data-value="true"] .img-wrap {
+		width: 0%;
+	}
+
+	.ffs .img-wrap {
+		list-style: none;
+		letter-spacing: 1px;
+		font: 12px "Tahoma";
+		line-height: 24px;
+		color: #444;
+		text-align: right;
+		white-space: nowrap;
+		width: 50%;
+		transition: width 0.8s ease;
+	}
+
+	.ffs .img-wrap .img {
+		text-align: right;
+		pointer-events: none;
+	}
+</style>
+<script>
+	function makeFfs(selector, requestKey = "value") {
+		function doNode(form, n) {
+			async function upload() {
+				const body = {};
+				body[requestKey] = form.dataset.value;
+				const resp = await fetch(form.action, {
+					method: form.method || "POST",
+					body: JSON.stringify(body),
+					headers: { "Content-Type": "application/json" },
+				}).catch(() => null);
+				const j = await resp?.json().catch(() => false);
+				form.dataset.confirmed = !!j;
+				return j;
+			}
+
+			function upd(value, solved = true) {
+				form.dataset.value = value;
+				form.dataset.solved = solved;
+				upload();
+			}
+
+			form.onclick = () => upd(true);
+			form.oncontextmenu = () => upd(false);
+			form.ondblclick = () => upd(false, false);
+		}
+
+		Array.from(document.querySelectorAll(selector)).forEach(doNode);
+	}
+
+	makeFfs("#form1");
+	// const f1 = document.querySelector("#form1");
+	// f1.onsubmit = (e) => {
+	// 	alert(e);
+	// 	alert(f1.i.value);
+	// 	return false;
+	// };
+</script>

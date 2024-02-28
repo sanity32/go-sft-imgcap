@@ -1,6 +1,8 @@
 package server
 
-import "github.com/gofiber/fiber/v2"
+import (
+	"github.com/gofiber/fiber/v2"
+)
 
 type Server struct {
 	App *fiber.App
@@ -23,5 +25,11 @@ func New() *Server {
 	app := fiber.New()
 	app.Post("/q", serv.postQuery)
 	app.Post("/record", serv.postRecord)
+	app.All("/lastSuccessful", serv.RenderLastSuccessful)
+	app.Get("/descr/list", serv.DescrList)
+	app.Get("/descr/distinct/:descr", serv.DescrDistinct)
+	app.Get("/descr/solve", serv.DescrSolveList)
+	app.Get("/descr/solve/:descr", serv.DescrSolve)
+	app.Post("/descr/solve/:descr/:hash", serv.DecrPostSolution)
 	return &Server{App: app}
 }

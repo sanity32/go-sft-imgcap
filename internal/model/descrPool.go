@@ -13,8 +13,11 @@ import (
 func NewNormalPool(descr Descr) DescrPool {
 	return DescrPool{
 		Descr:     descr,
-		Capacity:  200,
-		Threshold: 50,
+		Capacity:  300,
+		Threshold: 70,
+		// Capacity:  200,
+		// Threshold: 50,
+
 	}
 }
 

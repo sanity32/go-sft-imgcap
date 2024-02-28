@@ -1,6 +1,7 @@
 package model
 
 import (
+	"fmt"
 	"os"
 	"path"
 	"sort"
@@ -10,6 +11,22 @@ import (
 )
 
 type Descr string
+
+func AllDescr() (rr []Descr) {
+	dir := path.Join(ASSETS_DIR, "descr")
+	if !dirExist(dir) {
+		fmt.Println("dir", dir, "does not exist")
+		return
+	}
+	if entries, err := os.ReadDir(dir); err == nil {
+		for _, entry := range entries {
+			if entry.IsDir() {
+				rr = append(rr, Descr(entry.Name()))
+			}
+		}
+	}
+	return
+}
 
 func (d Descr) String() string {
 	return string(d)

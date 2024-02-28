@@ -16,10 +16,10 @@ func TestDescr_ListSids(t *testing.T) {
 	if err != nil {
 		t.Fatal(err.Error())
 	}
-	os.Mkdir(descr.String(), 0644)
+	os.Mkdir(descr.String(), 0777)
 
 	for hash, n := range m {
-		im, err := HashDir.Read(hash)
+		im, err := MainHashDir.Read(hash)
 		if err != nil {
 			t.Fatal(err.Error())
 		}

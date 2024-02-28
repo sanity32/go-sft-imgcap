@@ -4,18 +4,13 @@ import (
 	"fmt"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/sanity32/b64img"
 	"github.com/sanity32/go-sft-imgcap/internal/model"
 )
 
 type QueryRequest struct {
 	model.SessionRecord
 	UpdateRecords bool `json:"upd"`
-}
-
-type QueryResponse struct {
-	Description string    `json:"description"`
-	Answers     []bool    `json:"answers"`
-	Weights     []float32 `json:"weights"`
 }
 
 func (serv *Server) postQuery(ctx *fiber.Ctx) error {
@@ -27,7 +22,18 @@ func (serv *Server) postQuery(ctx *fiber.Ctx) error {
 
 	if rec.UpdateRecords {
 		rec.Write()
+		rec.PopulateHashDir()
 		fmt.Println("==== UPDATED ===")
+	}
+	hashes := rec.Hashes()
+
+	solvedAnswers, hasSolution := model.FindSolutions(rec.Descr, hashes)
+	if hasSolution {
+		return ctx.JSON(QueryResponse{
+			Description: rec.Descr.String(),
+			Hashes:      hashes,
+			Answers:     solvedAnswers,
+		})
 	}
 
 	pool := model.NewNormalPool(rec.Descr)
@@ -35,19 +41,42 @@ func (serv *Server) postQuery(ctx *fiber.Ctx) error {
 		return serv.simpleOut(ctx, model.ErrNotEnoughSamples)
 	}
 
-	ww, err := pool.Weights(rec.Hashes())
+	ww, err := pool.Weights(hashes)
 	if err != nil {
 		return serv.simpleOut(ctx, err)
+	}
+
+	for n, w := range ww {
+		if w > .9 && w < 1.15 {
+			fmt.Printf("Weight %v is unclear\n", w)
+			return ctx.JSON(map[string]any{
+				"error": "weight is unclear",
+				"n":     n,
+				"ww":    ww,
+			})
+		}
 	}
 
 	resp := QueryResponse{
 		Description: rec.Descr.String(),
 		Weights:     ww,
 	}
+	resp.Hashes = make([]b64img.Hash, len(hashes))
+	resp.Hashes = hashes
+	// for n, hash := range hashes {
+	// 	resp.Hashes[n] = hash
+	// }
+
 	resp.Answers = make([]bool, len(ww))
 	for n, w := range ww {
-		resp.Answers[n] = w >= 1
+		if solved := solvedAnswers[n]; solved {
+			resp.Answers[n] = true
+		} else {
+			resp.Answers[n] = w >= 1
+		}
 	}
+	// serv.LastSuccessful.Push(resp)
+	LastResponse = resp
 	return ctx.JSON(resp)
 }
 

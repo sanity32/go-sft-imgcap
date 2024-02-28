@@ -21,7 +21,7 @@ func TestSessionRecord_Write(t *testing.T) {
 			img3,
 		},
 	}
-	HashDir.Create()
+	MainHashDir.Create()
 
 	t.Log(rec.Write())
 
